@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Jogos Universitários</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  </head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo">
+        <span class="logo-icon"> <img src="ufs_logo_domain_banner-d8566f40eb5833529bd56d1760b94aa80eafba6bc03c162caaaf6ca1b7874f0f.png" alt="UFS"></span>
+        <div class = "container-logo">
+          <h1>JOGOS DA UFS</h1>
+          <p>Inscrições abertas!</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="abrirTelaInscricao()">+ Nova Inscrição</button>
+    </div>
+  </header>
+
+  <!-- Abas e Navegação -->
+  <nav class="nav-tabs">
+    <div class="container tabs-container">
+      <button class="tab-btn active" onclick="trocarAba('alunos')"> Consultar Alunos</button>
+      <button class="tab-btn" onclick="trocarAba('jogos')"> Jogos e Modalidades</button>
+      <button class="tab-btn" onclick="trocarAba('inscricoes')"> Inscrições Realizadas (<span id="count-inscricoes">0</span>)</button>
+    </div>
+  </nav>
+
+  <!--Principal -->
+  <main class="container main-content">
+
+    <!-- Aba 1: Consulta de alunos -->
+    <section id="aba-alunos" class="tab-content active">
+      <div class="section-header">
+        <h2>Consulta ao Banco de Alunos</h2>
+        <p>Pesquise alunos pelo nome, matrícula ou filtre por curso acadêmico.</p>
+      </div>
+
+      <div class="filter-bar">
+        <input 
+          type="text" 
+          id="busca-aluno" 
+          placeholder=" Buscar por nome, matrícula ou CPF..." 
+          oninput="filtrarAlunos()"
+        >
+        <select id="filtro-curso" onchange="filtrarAlunos()">
+          <option value="">Todos os Cursos</option>
+          <option value="Ciência da Computação">Ciência da Computação</option>
+          <option value="Medicina">Medicina</option>
+          <option value="Educação Física">Educação Física</option>
+          <option value="Engenharia Civil">Engenharia Civil</option>
+          <option value="Direito">Direito</option>
+          <option value="Administração">Administração</option>
+        </select>
+        <select id="filtro-status" onchange="filtrarAlunos()">
+          <option value="">Status: Todos</option>
+          <option value="regular">Regular</option>
+          <option value="trancado">Trancado</option>
+        </select>
+      </div>
+
+      <div id="grid-alunos" class="grid-cards">
+        <!-- Renderizado dinamicamente via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Aba 2: Jogos e modalidades -->
+    <section id="aba-jogos" class="tab-content">
+      <div class="section-header">
+        <h2>Jogos Universitários & Modalidades</h2>
+        <p>Torneios abertos e quantidade de vagas disponíveis por modalidade esportiva.</p>
+      </div>
+
+      <div id="grid-jogos" class="grid-cards">
+        <!-- Renderizado dinamicamente via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Aba 3: tela de inscrições realizadas -->
+    <section id="aba-inscricoes" class="tab-content">
+      <div class="section-header">
+        <h2>Inscrições Efetuadas</h2>
+        <p>Lista de alunos vinculados às modalidades dos jogos universitários.</p>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Aluno</th>
+              <th>Matrícula</th>
+              <th>Curso</th>
+              <th>Torneio</th>
+              <th>Modalidade</th>
+              <th>Status</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-inscricoes">
+            <!-- Linhas renderizadas via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE INSCRIÇÃO -->
+  <div id="modal-inscricao" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Inscrever Aluno no Jogo Universitário</h3>
+        <button class="close-btn" onclick="fecharModalInscricao()">&times;</button>
+      </div>
+
+      <form id="form-inscricao" onsubmit="salvarInscricao(event)">
+        <div class="form-group">
+          <label for="select-aluno">Selecione o Aluno:</label>
+          <select id="select-aluno" required onchange="aoMudarAlunoSelecionado()">
+            <option value="">-- Escolha um estudante --</option>
+          </select>
+          <small id="info-aluno-status" class="hint"></small>
+        </div>
+
+        <div class="form-group">
+          <label for="select-jogo">Competição / Jogo:</label>
+          <select id="select-jogo" required onchange="aoMudarJogo()">
+            <option value="">-- Escolha a competição --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="select-modalidade">Modalidade Esportiva:</label>
+          <select id="select-modalidade" required>
+            <option value="">-- Primeiro selecione um jogo --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="input-obs">Observações / Camisa (Opcional):</label>
+          <input type="text" id="input-obs" placeholder="Ex: Camisa 10, titular...">
+        </div>
+
+        <div id="modal-alerta" class="alert hidden"></div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalInscricao()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar Inscrição</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
